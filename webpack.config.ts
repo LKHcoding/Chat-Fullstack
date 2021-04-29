@@ -71,7 +71,7 @@ const config: webpack.Configuration = {
     publicPath: '/dist/',
   },
   devServer: {
-    historyApiFallback: true, // react router
+    historyApiFallback: true, // react router spa에서 새로고침시에도 해당 페이지 찾아가도록 해주는 설정
     port: 3090,
     publicPath: '/dist/',
     // proxy: {
