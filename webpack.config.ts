@@ -8,7 +8,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const config: webpack.Configuration = {
   // name: 'sleact',
-  name: 'Slack-Clone-Project',
+  name: 'slack-clone-project',
   mode: isDevelopment ? 'development' : 'production',
   devtool: !isDevelopment ? 'hidden-source-map' : 'eval',
   resolve: {
@@ -74,12 +74,12 @@ const config: webpack.Configuration = {
     historyApiFallback: true, // react router spa에서 새로고침시에도 해당 페이지 찾아가도록 해주는 설정
     port: 3090,
     publicPath: '/dist/',
-    // proxy: {
-    //   '/api/': {
-    //     target: 'http://localhost:3095',
-    //     changeOrigin: true,
-    //   },
-    // },
+    proxy: {
+      '/api/': {
+        target: 'http://localhost:3095',
+        changeOrigin: true,
+      },
+    },
   },
 };
 
