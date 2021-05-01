@@ -1,10 +1,13 @@
 import useInput from '@hooks/useInput';
 import { Button, Error, Form, Header, Input, Label, LinkContainer, Success } from '@pages/SignUp/styles';
+import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import useSWR from 'swr';
 
 const LogIn = () => {
+  const { data, error, revalidate } = useSWR('http://localhost:3095/api/users', fetcher);
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
@@ -16,12 +19,12 @@ const LogIn = () => {
         .post(
           '/api/users/login',
           { email, password },
-          // {
-          //   withCredentials: true,
-          // },
+          {
+            withCredentials: true,
+          },
         )
         .then((response) => {
-          // revalidate();
+          revalidate();
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
@@ -34,9 +37,10 @@ const LogIn = () => {
   //   return <div>로딩중...</div>;
   // }
 
-  // if (data) {
-  //   return <Redirect to="/workspace/sleact/channel/일반" />;
-  // }
+  if (data) {
+    return <Redirect to="/workspace/channel" />;
+    // return <Redirect to="/workspace/sleact/channel/일반" />;
+  }
 
   // console.log(error, userData);
   // if (!error && userData) {
