@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, { FC, useCallback } from 'react';
 import { Redirect } from 'react-router';
 import useSWR, { mutate } from 'swr';
+import { Header, ProfileImg, RightMenu } from '@layouts/Workspace/styles';
 
 const Workspace: FC = ({ children }) => {
   const { data, error, revalidate, mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
@@ -25,6 +26,13 @@ const Workspace: FC = ({ children }) => {
 
   return (
     <div>
+      <Header>
+        <RightMenu>
+          <span>
+            <ProfileImg src="" alt={data.nickname} />
+          </span>
+        </RightMenu>
+      </Header>
       <button onClick={onLogout}>로그아웃</button>
       {children}
     </div>
