@@ -18,17 +18,13 @@ const CreateChannelModal: FC<Props> = ({ show, onCloseModal, setShowCreateChanne
   const [newChannel, onChangeNewChannel, setNewChannel] = useInput('');
   const { workspace, channel } = useParams<{ workspace: string; channel: string }>();
 
-  const { data: userData, error, revalidate, mutate } = useSWR<IUser | false>(
-    'http://localhost:3095/api/users',
-    fetcher,
-    {
-      dedupingInterval: 2000, //2초동안은 url 키를 통해 가져온 데이터를 캐싱해서 재활용한다.
-    },
-  );
+  const { data: userData, error, revalidate, mutate } = useSWR<IUser | false>('/api/users', fetcher, {
+    dedupingInterval: 2000, //2초동안은 url 키를 통해 가져온 데이터를 캐싱해서 재활용한다.
+  });
 
   //로그인 했을때만 채널 데이터 불러오도록 조건부 요청(swr은 조건부 요청을 지원함)
   const { data: channelData, revalidate: revalidateChannel } = useSWR<IChannel[]>(
-    userData ? `http://localhost:3095/api/workspaces/${workspace}/channels` : null,
+    userData ? `/api/workspaces/${workspace}/channels` : null,
     fetcher,
   );
 
@@ -37,7 +33,7 @@ const CreateChannelModal: FC<Props> = ({ show, onCloseModal, setShowCreateChanne
       e.preventDefault();
       axios
         .post(
-          `http://localhost:3095/api/workspaces/${workspace}/channels`,
+          `/api/workspaces/${workspace}/channels`,
           {
             name: newChannel,
           },
