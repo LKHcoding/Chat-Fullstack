@@ -1,6 +1,6 @@
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
-import React, { VFC, useCallback, useState } from 'react';
+import React, { VFC, useCallback, useState, useEffect } from 'react';
 import { Redirect, Route, Switch, useParams } from 'react-router';
 import useSWR, { mutate } from 'swr';
 import {
@@ -33,6 +33,7 @@ import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
 import InviteChannelModal from '@components/InviteChannelModal';
 import DMList from '@components/DMList';
 import ChannelList from '@components/ChannelList';
+import useSocket from '@hooks/useSocket';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
@@ -57,6 +58,21 @@ const Workspace: VFC = () => {
 
   //워크스페이스에 있는 멤버데이터 가져오기
   const { data: memberData } = useSWR<IUser[]>(userData ? `/api/workspaces/${workspace}/members` : null, fetcher);
+
+  //소켓 연결
+  const [socket, disconnect] = useSocket(workspace);
+
+  useEffect(() => {
+    if (channelData && userData && socket) {
+      socket.emit('login', { id: userData.id, channels: channelData.map((v) => v.id) });
+    }
+  }, [socket, channelData, userData]);
+
+  useEffect(() => {
+    return () => {
+      disconnect();
+    };
+  }, [workspace, disconnect]);
 
   const onLogout = useCallback(() => {
     axios
