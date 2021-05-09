@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 const backUrl = 'http://localhost:3095';
 
 const sockets: { [key: string]: SocketIOClient.Socket } = {};
+
 const useSocket = (workspace?: string): [SocketIOClient.Socket | undefined, () => void] => {
   const disconnect = useCallback(() => {
     if (workspace) {
@@ -21,7 +22,6 @@ const useSocket = (workspace?: string): [SocketIOClient.Socket | undefined, () =
       transports: ['websocket'],
     });
   }
-
   return [sockets[workspace], disconnect];
 };
 
