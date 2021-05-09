@@ -9,7 +9,10 @@ interface Props {
 }
 const ChatList: VFC<Props> = ({ chatData }) => {
   const scrollbarRef = useRef(null);
-  const onScroll = useCallback(() => {}, []);
+  const onScroll = useCallback(() => {
+    // 나중에 채팅리스트 위로 올렸을때 lazyLoading (과거 채팅들 스크롤에따라서 불러오는 동작)
+    // 구현하기 위한 영역
+  }, []);
 
   return (
     <ChatZone>
