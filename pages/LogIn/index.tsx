@@ -25,11 +25,11 @@ const LogIn = () => {
         )
         .then((response) => {
           //revalidate은 swr호출을 한번더시킨다.
-          // revalidate();
+          revalidate();
 
           //mutate는 요청을 다시보내지 않고 데이터를 넣는다.
           //optimistic ui (좋은 사용자 경험을 위해 2번째 인자 true주면 서버에 재확인 요청을 함)
-          mutate(response.data, false);
+          // mutate(response.data, false);
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);

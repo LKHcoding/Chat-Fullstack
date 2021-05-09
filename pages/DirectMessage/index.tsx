@@ -20,21 +20,24 @@ const DirectMessage = () => {
   );
   const [chat, onChangeChat, setChat] = useInput('');
 
-  const onSubmitForm = useCallback((e) => {
-    e.preventDefault();
-    console.log('submitDM');
-    if (chat?.trim()) {
-      axios
-        .post(`/api/workspace/${workspace}/dms/${id}/chats`, {
-          content: chat,
-        })
-        .then(() => {
-          revalidate();
-          setChat('');
-        })
-        .catch(console.error);
-    }
-  }, []);
+  const onSubmitForm = useCallback(
+    (e) => {
+      e.preventDefault();
+      console.log('submitDM');
+      if (chat?.trim()) {
+        axios
+          .post(`/api/workspaces/${workspace}/dms/${id}/chats`, {
+            content: chat,
+          })
+          .then(() => {
+            revalidate();
+            setChat('');
+          })
+          .catch(console.error);
+      }
+    },
+    [chat],
+  );
 
   if (!userData || !myData) {
     return null;
@@ -46,7 +49,7 @@ const DirectMessage = () => {
         <img src={gravatar.url(userData.email, { s: '24px', d: 'retro' })} alt={userData.nickname} />
         <span>{userData.nickname}</span>
       </Header>
-      <ChatList />
+      <ChatList chatData={chatData} />
       <ChatBox chat={chat} onChangeChat={onChangeChat} onSubmitForm={onSubmitForm} />
     </Container>
   );
