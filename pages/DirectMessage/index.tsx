@@ -27,6 +27,7 @@ const DirectMessage = () => {
   const isReachingEnd = isEmpty || (chatData && chatData[chatData.length - 1]?.length < 20) || false;
 
   const scrollbarRef = useRef<Scrollbars>(null);
+
   const onSubmitForm = useCallback(
     (e) => {
       e.preventDefault();
@@ -83,7 +84,7 @@ const DirectMessage = () => {
       </Header>
       <ChatList
         chatSections={chatSections}
-        ref={scrollbarRef}
+        scrollRef={scrollbarRef}
         setSize={setSize}
         isEmpty={isEmpty}
         isReachingEnd={isReachingEnd}

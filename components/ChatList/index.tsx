@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useRef, VFC } from 'react';
+import React, { RefObject, useCallback, VFC } from 'react';
 import { ChatZone, Section, StickyHeader } from '@components/ChatList/styles';
 import { IDM } from '@typings/db';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -9,8 +9,9 @@ interface Props {
   setSize: (f: (size: number) => number) => Promise<IDM[][] | undefined>;
   isEmpty: boolean;
   isReachingEnd: boolean;
+  scrollRef: RefObject<Scrollbars>;
 }
-const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isEmpty, isReachingEnd }, ref) => {
+const ChatList: VFC<Props> = ({ chatSections, setSize, scrollRef, isEmpty, isReachingEnd }) => {
   const onScroll = useCallback((values) => {
     // 나중에 채팅리스트 위로 올렸을때 lazyLoading (과거 채팅들 스크롤에따라서 불러오는 동작)
     // 구현하기 위한 영역
@@ -19,13 +20,16 @@ const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isEmpty
       //data 추가 로딩
       setSize((prevSize) => prevSize + 1).then(() => {
         //스크롤 위치 유지
+        if (scrollRef?.current) {
+          scrollRef.current?.scrollTop(scrollRef.current?.getScrollHeight() - values.scrollHeight);
+        }
       });
     }
   }, []);
 
   return (
     <ChatZone>
-      <Scrollbars autoHide ref={ref} onScrollFrame={onScroll}>
+      <Scrollbars autoHide ref={scrollRef} onScrollFrame={onScroll}>
         {Object.entries(chatSections).map(([date, chats]) => {
           return (
             <Section className={`section-${date}`} key={date}>
@@ -41,6 +45,6 @@ const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isEmpty
       </Scrollbars>
     </ChatZone>
   );
-});
+};
 
 export default ChatList;
