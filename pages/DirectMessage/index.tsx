@@ -1,5 +1,5 @@
 import { Container, Header } from '@pages/DirectMessage/styles';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import gravatar from 'gravatar';
 import fetcher from '@utils/fetcher';
 import useSWR, { useSWRInfinite } from 'swr';
@@ -11,10 +11,12 @@ import axios from 'axios';
 import { IDM } from '@typings/db';
 import makeSection from '@utils/makeSection';
 import Scrollbars from 'react-custom-scrollbars';
+import useSocket from '@hooks/useSocket';
 
 const DirectMessage = () => {
   const { workspace, id } = useParams<{ workspace: string; id: string }>();
   const [chat, onChangeChat, setChat] = useInput('');
+  const [forRefresh, setForRefresh] = useState(false);
 
   const { data: userData } = useSWR(`/api/workspaces/${workspace}/users/${id}`, fetcher);
   const { data: myData } = useSWR(`/api/users`, fetcher);
@@ -22,6 +24,9 @@ const DirectMessage = () => {
     (index) => `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=${index + 1}`,
     fetcher,
   );
+
+  //소켓 연결하기
+  const [socket] = useSocket(workspace);
 
   const isEmpty = chatData?.[0]?.length === 0;
   const isReachingEnd = isEmpty || (chatData && chatData[chatData.length - 1]?.length < 20) || false;
@@ -71,6 +76,40 @@ const DirectMessage = () => {
       scrollbarRef.current?.scrollToBottom();
     }
   }, [chatData]);
+
+  const onMessage = useCallback((data: IDM) => {
+    // id는 상대방 아이디
+    if (data.SenderId === Number(id) && myData.id !== Number(id)) {
+      mutateChat((chatData) => {
+        chatData?.[0].unshift(data);
+        return chatData;
+      }, false).then(() => {
+        //브라우저가 현재 포커싱이 되어있지 않아도 화면에 채팅을 구려주기 위한 setState
+        setForRefresh((prev) => !prev);
+
+        if (scrollbarRef.current) {
+          if (
+            // 사용자 편의성을 위해 150px 이상 스크롤 올렸을때는 스크롤을 유지하고,
+            // 150px이상 올리지 않았을때는 상대가 채팅을 쳐도 스크롤을 최하단으로 내려준다.
+            scrollbarRef.current.getScrollHeight() <
+            scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
+          ) {
+            console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+            setTimeout(() => {
+              scrollbarRef.current?.scrollToBottom();
+            }, 50);
+          }
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    socket?.on('dm', onMessage);
+    return () => {
+      socket?.off('dm', onMessage);
+    };
+  }, [socket, onMessage]);
 
   if (!userData || !myData) {
     return null;
