@@ -7,7 +7,7 @@ export const ChatZone = styled.div`
 `;
 
 export const Section = styled.section`
-  margin-top: 20px;
+  margin-top: 28px;
   border-top: 1px solid #eee;
 `;
 
@@ -17,7 +17,7 @@ export const StickyHeader = styled.div`
   flex: 1;
   width: 100%;
   position: sticky;
-  top: 14px;
+  top: 28px;
   & button {
     font-weight: bold;
     font-size: 13px;
