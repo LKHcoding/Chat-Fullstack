@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import loadable from '@loadable/component';
-
 /**
  * 코드스플리팅 방식
  * -> 여기서 필요한 페이지 말고 나머지들을 다 import하는건 리소스낭비임

@@ -27,13 +27,14 @@ import { IChannel, IUser } from '@typings/db';
 import { Button, Input, Label } from '@pages/SignUp/styles';
 import useInput from '@hooks/useInput';
 import Modal from '@components/Modal';
-import { toast } from 'react-toastify';
+import { Flip, toast, ToastContainer } from 'react-toastify';
 import CreateChannelModal from '@components/CreateChannelModal';
 import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
 import InviteChannelModal from '@components/InviteChannelModal';
 import DMList from '@components/DMList';
 import ChannelList from '@components/ChannelList';
 import useSocket from '@hooks/useSocket';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
@@ -69,6 +70,17 @@ const Workspace: VFC = () => {
   }, [socket, channelData, userData]);
 
   useEffect(() => {
+    toast(`${workspace} 입장 하였습니다.`, {
+      position: 'top-center',
+      autoClose: 1500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      transition: Flip,
+    });
+
     return () => {
       disconnect();
     };
@@ -236,6 +248,7 @@ const Workspace: VFC = () => {
         onCloseModal={onCloseModal}
         setShowInviteChannelModal={setShowInviteChannelModal}
       />
+      <ToastContainer />
     </div>
   );
 };
